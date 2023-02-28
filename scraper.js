@@ -13,7 +13,15 @@ fs.readFile("asins.txt", async (err, asinList) => {
   asinList = asinList.toString().split("\r\n");
   let items = [];
   for (asin of asinList) {
-    if ( asin != "" ) {
+    if ( asin.slice(0,3) == "---" && asinList.indexOf(asin) == 0 ) {
+      console.log(asin);
+    } else if ( asin.slice(0,3) == "---" ) {
+      console.table(items);
+      items = [];
+      console.log(asin);
+    } else if ( asin.slice(0,1) == "#" ) {
+      continue
+    } else if ( asin != "" ) {
       await getItem(asin)
         .then(item => items.push(item))
         .catch(err => console.warn("There was an error", err));
@@ -29,7 +37,7 @@ async function getItem(asin) {
     .catch(err => console.warn("There was an error", err));
   const $ = cheerio.load(html);
   const name = $('span#productTitle').text().trim().slice(0, 80);
-  const sale = $('span.savingsPercentage').text();
+  const sale = $('span.savingsPercentage').text() ? $('span.savingsPercentage').text().split('-')[1] : false;
   const price = $('span.a-price-whole').text().split(".")[0];
   return { asin, name, sale, price };
 };
