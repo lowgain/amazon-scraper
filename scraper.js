@@ -9,26 +9,26 @@ const USER_AGENT = {
   }
 };
 
-fs.readFile("asins.txt", async (err, asinList) => {
-  asinList = asinList.toString().split("\r\n");
-  let items = [];
-  for (asin of asinList) {
-    if ( asin.slice(0,3) == "---" && asinList.indexOf(asin) == 0 ) {
-      console.log(asin);
-    } else if ( asin.slice(0,3) == "---" ) {
-      console.table(items);
-      items = [];
-      console.log(asin);
-    } else if ( asin.slice(0,1) == "#" ) {
-      continue
-    } else if ( asin != "" ) {
-      await getItem(asin)
-        .then(item => items.push(item))
-        .catch(err => console.warn("There was an error", err));
-    };
-  };
-  console.table(items);
+fs.readFile('asins.json', async (err, asins) => {
   if (err) throw err; 
+  asins = JSON.parse(asins);
+  for ( i in asins ) {
+    console.log();
+    console.log("----------  " + i + "  ----------")
+    console.log();
+    const group = asins[i];
+    let items = [];
+    for ( asin of group ) {
+      if ( asin.slice(0,1) == "#" ) {
+        continue
+      } else if ( asin != "" ) {
+        await getItem(asin)
+          .then(item => items.push(item))
+          .catch(err => console.warn("There was an error", err));
+      };
+    };
+    console.table(items);
+  };
 });
 
 async function getItem(asin) {
@@ -37,7 +37,8 @@ async function getItem(asin) {
     .catch(err => console.warn("There was an error", err));
   const $ = cheerio.load(html);
   const name = $('span#productTitle').text().trim().slice(0, 80);
-  const sale = $('span.savingsPercentage').text() ? $('span.savingsPercentage').text().split('-')[1] : false;
   const price = $('span.a-price-whole').text().split(".")[0];
-  return { asin, name, sale, price };
+  const sale = $('span.savingsPercentage').text() ? $('span.savingsPercentage').text().split('-')[1] : false;
+  const link = AMAZON_URL + asin;
+  return { name, price, sale, link };
 };
