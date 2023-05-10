@@ -1,0 +1,35 @@
+extends layout
+
+block content
+  h1= title
+
+  p This website currently has #[strong !{item_count}] items recorded:
+
+  form(method='POST' action='')
+    h4 Add new item
+
+    label(for='asin') Asin:
+    input#asin.form-control(type='text' placeholder='Asin' name='asin' required='true')
+
+    button.btn.btn-primary(type='submit') Add Item
+    
+  h2 Item list
+  h4 Click name for more details
+
+  table
+    if item_list.length != 0
+      tr
+        th Name
+        th Price 
+        th Sale 
+        th Amazon link
+
+      each item in item_list
+        tr
+          td a(href=item.url) #{item.name}
+          td= item.price
+          td= item.sale
+          td= item.aznUrl
+
+    else
+      li There are no items.

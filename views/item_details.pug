@@ -1,0 +1,16 @@
+extends layout
+
+block content
+
+  h1 Item: #{item.name}
+  dl 
+    dt Price
+    dd= item.price
+    dt Sale
+    dd= item.sale
+    dt URL
+    dd a(href=item.amzn_url) #{item.amzn_url}
+
+  form(method=DELETE action='')
+    h4 Delete Item
+    button.btn.btn-primary(type='submit') Delete

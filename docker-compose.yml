@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  app:
+    image: amazon-scraper
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    links:
+      - db
+
+  db:
+    image: mongo:latest
+    volumes:
+      - amzn_scraper_db:/data/db
+    ports:
+      - "27017:27017"
+
+volumes:
+  amzn-scraper-db:
+    name: amzn-scraper-db
+    external: true
